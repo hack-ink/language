@@ -1,74 +1,26 @@
 <div align="center">
 
-# <NAME>
-### <DESCRIPTION>
+# language
+### BCP47 language tags.
 
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Checks](https://github.com/hack-ink/<NAME>/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/hack-ink/<NAME>/actions/workflows/checks.yml)
-[![Release](https://github.com/hack-ink/<NAME>/actions/workflows/release.yml/badge.svg)](https://github.com/hack-ink/<NAME>/actions/workflows/release.yml)
-[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/hack-ink/<NAME>)](https://github.com/hack-ink/<NAME>/tags)
-[![GitHub last commit](https://img.shields.io/github/last-commit/hack-ink/<NAME>?color=red&style=plastic)](https://github.com/hack-ink/<NAME>)
+[![Checks](https://github.com/hack-ink/language/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/hack-ink/language/actions/workflows/checks.yml)
+[![Release](https://github.com/hack-ink/language/actions/workflows/release.yml/badge.svg)](https://github.com/hack-ink/language/actions/workflows/release.yml)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/hack-ink/language)](https://github.com/hack-ink/language/tags)
+[![GitHub last commit](https://img.shields.io/github/last-commit/hack-ink/language?color=red&style=plastic)](https://github.com/hack-ink/language)
 </div>
 
 
-## Feature Highlights
-### TODO
-TODO
+## Introduction
+Language tags are defined in [BCP47](http://tools.ietf.org/html/bcp47).
 
-## Status
-TODO
+An introduction can be found in the article ["Language tags in HTML and XML"](http://www.w3.org/International/articles/language-tags/) by the W3C.
 
+These tags are commonly used in HTML and in the `Content-Language` and `Accept-Language` header fields of HTTP.
 
-## Usage
-### Installation
-#### Build from Source
-```sh
-# Clone the repository.
-git clone https://github.com/hack-ink/<NAME>
-cd <NAME>
+I primarily use this in my [AiR](https://github.com/hack-ink/AiR) project to support multiple languages.
 
-# To install Rust on macOS and Unix, run the following command.
-#
-# To install Rust on Windows, download and run the installer from `https://rustup.rs`.
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain stable
-
-# Install the necessary dependencies. (Unix only)
-# Using Ubuntu as an example, this really depends on your distribution.
-sudo apt-get update
-sudo apt-get install <DEPENDENCIES>
-
-# Build the project, and the binary will be available at `target/release/<NAME>`.
-cargo build --release
-
-# If you are a macOS user and want to have a `<NAME>.app`, run the following command.
-# Install `cargo-bundle` to pack the binary into an app.
-cargo install cargo-bundle
-# Pack the app, and the it will be available at `target/release/bundle/osx/<NAME>.app`.
-cargo bundle --release
-```
-
-#### Download Pre-built Binary
-- **macOS**
-  - Download the latest pre-built binary from [GitHub Releases](https://github.com/hack-ink/<NAME>/releases/latest).
-- **Windows**
-  - TODO
-- **Unix**
-  - TODO
-
-### Configuration
-#### TODO
-TODO
-
-### Interaction
-TODO
-
-### Update
-TODO
-
-
-## Development
-### Architecture
-TODO
+There are already many similar crates, but none provide `as_tag`, `from_tag`, `as_str`, and `as_local` at the same time. So, I implemented this myself.
 
 
 ## Support Me
@@ -88,15 +40,6 @@ Your support is greatly appreciated and motivates me to keep improving this proj
     - `156HGo9setPcU2qhFMVWLkcmtCEGySLwNqa3DaEiYSWtte4Y`
 
 Thank you for your support!
-
-
-## Appreciation
-We would like to extend our heartfelt gratitude to the following projects and contributors:
-- The Rust community for their continuous support and development of the Rust ecosystem.
-
-
-## Additional Acknowledgements
-- TODO
 
 
 <div align="right">

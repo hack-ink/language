@@ -6,8 +6,6 @@ env:
   CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
   CARGO_TERM_COLOR: always
 
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   RUST_BACKTRACE: full
 
 on:
@@ -57,6 +55,6 @@ jobs:
         uses: vishnudxb/cancel-workflow@v1.2
         if: failure()
         with:
-          repo: hack-ink/<NAME>
+          repo: hack-ink/language
           workflow_id: ${{ github.run_id }}
           access_token: ${{ github.token }}
