@@ -518,7 +518,7 @@ pub enum Language {
 }
 impl Language {
 	/// Get all languages.
-	pub fn all() -> [Self; 250] {
+	pub const fn all() -> [Self; 250] {
 		[
 			AfZa,
 			SqAl,
