@@ -7,7 +7,7 @@ license     = "GPL-3.0"
 name        = "language"
 readme      = "README.md"
 repository  = "https://github.com/hack-ink/language"
-version     = "0.1.0"
+version     = "0.1.1"
 
 [profile.ci-dev]
 incremental = false
