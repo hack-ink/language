@@ -9,10 +9,11 @@ use serde::{
 	ser::Serializer,
 	Deserialize, Serialize,
 };
+#[cfg(all(not(feature = "serde"), test))] use serde_json as _;
 // self
 use Language::*;
 
-/// Language collection.
+#[allow(missing_docs)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Language {
 	/// Afrikaans (South Africa)
@@ -1817,4 +1818,15 @@ impl<'de> Deserialize<'de> for Language {
 
 		Language::from_tag(&tag).ok_or_else(|| Error::unknown_variant(&tag, &[]))
 	}
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn serde_should_work() {
+	let lang = Language::EnUs;
+	let serialized = serde_json::to_string(&lang).unwrap();
+	assert_eq!(serialized, "\"en-US\"");
+
+	let deserialized: Language = serde_json::from_str(&serialized).unwrap();
+	assert_eq!(deserialized, lang);
 }
