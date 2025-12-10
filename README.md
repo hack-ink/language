@@ -6,7 +6,7 @@ Typed BCP47 language tags with names, plural metadata, and conversion helpers to
 
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Docs](https://img.shields.io/docsrs/language)](https://docs.rs/language)
-[![Rust](https://github.com/hack-ink/language/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/hack-ink/language/actions/workflows/rust.yml)
+[![Rust](https://github.com/hack-ink/language/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/hack-ink/language/actions/workflows/rust.yml)
 [![Release](https://github.com/hack-ink/language/actions/workflows/release.yml/badge.svg)](https://github.com/hack-ink/language/actions/workflows/release.yml)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/hack-ink/language)](https://github.com/hack-ink/language/tags)
 [![GitHub last commit](https://img.shields.io/github/last-commit/hack-ink/language?color=red&style=plastic)](https://github.com/hack-ink/language)
