@@ -1,12 +1,7 @@
 // std
 use std::str::FromStr;
 // crates.io
-use sqlx::{
-	Decode, Encode, Type,
-	database::{HasArguments, HasValueRef},
-	encode::IsNull,
-	error::BoxDynError,
-};
+use sqlx::{Decode, Encode, Type, encode::IsNull, error::BoxDynError};
 // self
 use crate::prelude::*;
 
@@ -32,8 +27,8 @@ impl sqlx::postgres::PgHasArrayType for Language {
 impl<'q> Encode<'q, sqlx::Postgres> for Language {
 	fn encode_by_ref(
 		&self,
-		buf: &mut <sqlx::Postgres as HasArguments<'q>>::ArgumentBuffer,
-	) -> IsNull {
+		buf: &mut <sqlx::Postgres as sqlx::Database>::ArgumentBuffer<'q>,
+	) -> Result<IsNull, BoxDynError> {
 		let tag = self.tag();
 
 		<&str as Encode<'q, sqlx::Postgres>>::encode(tag, buf)
@@ -42,7 +37,9 @@ impl<'q> Encode<'q, sqlx::Postgres> for Language {
 
 #[cfg(feature = "sqlx-postgres")]
 impl<'r> Decode<'r, sqlx::Postgres> for Language {
-	fn decode(value: <sqlx::Postgres as HasValueRef<'r>>::ValueRef) -> Result<Self, BoxDynError> {
+	fn decode(
+		value: <sqlx::Postgres as sqlx::Database>::ValueRef<'r>,
+	) -> Result<Self, BoxDynError> {
 		let tag = <&str as Decode<'r, sqlx::Postgres>>::decode(value)?;
 
 		Language::from_str(tag).map_err(Into::into)
@@ -62,7 +59,10 @@ impl Type<sqlx::MySql> for Language {
 
 #[cfg(feature = "sqlx-mysql")]
 impl<'q> Encode<'q, sqlx::MySql> for Language {
-	fn encode_by_ref(&self, buf: &mut <sqlx::MySql as HasArguments<'q>>::ArgumentBuffer) -> IsNull {
+	fn encode_by_ref(
+		&self,
+		buf: &mut <sqlx::MySql as sqlx::Database>::ArgumentBuffer<'q>,
+	) -> Result<IsNull, BoxDynError> {
 		let tag = self.tag();
 
 		<&str as Encode<'q, sqlx::MySql>>::encode(tag, buf)
@@ -71,7 +71,7 @@ impl<'q> Encode<'q, sqlx::MySql> for Language {
 
 #[cfg(feature = "sqlx-mysql")]
 impl<'r> Decode<'r, sqlx::MySql> for Language {
-	fn decode(value: <sqlx::MySql as HasValueRef<'r>>::ValueRef) -> Result<Self, BoxDynError> {
+	fn decode(value: <sqlx::MySql as sqlx::Database>::ValueRef<'r>) -> Result<Self, BoxDynError> {
 		let tag = <&str as Decode<'r, sqlx::MySql>>::decode(value)?;
 
 		Language::from_str(tag).map_err(Into::into)
@@ -93,8 +93,8 @@ impl Type<sqlx::Sqlite> for Language {
 impl<'q> Encode<'q, sqlx::Sqlite> for Language {
 	fn encode_by_ref(
 		&self,
-		buf: &mut <sqlx::Sqlite as HasArguments<'q>>::ArgumentBuffer,
-	) -> IsNull {
+		buf: &mut <sqlx::Sqlite as sqlx::Database>::ArgumentBuffer<'q>,
+	) -> Result<IsNull, BoxDynError> {
 		let tag = self.tag();
 
 		<&str as Encode<'q, sqlx::Sqlite>>::encode(tag, buf)
@@ -103,7 +103,7 @@ impl<'q> Encode<'q, sqlx::Sqlite> for Language {
 
 #[cfg(feature = "sqlx-sqlite")]
 impl<'r> Decode<'r, sqlx::Sqlite> for Language {
-	fn decode(value: <sqlx::Sqlite as HasValueRef<'r>>::ValueRef) -> Result<Self, BoxDynError> {
+	fn decode(value: <sqlx::Sqlite as sqlx::Database>::ValueRef<'r>) -> Result<Self, BoxDynError> {
 		let tag = <&str as Decode<'r, sqlx::Sqlite>>::decode(value)?;
 
 		Language::from_str(tag).map_err(Into::into)
