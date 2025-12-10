@@ -14,11 +14,11 @@ pub mod prelude {
 }
 
 mod generated;
-
-#[cfg(feature = "scraper")] use scraper as _;
-
 #[cfg(feature = "icu_locale_core")] mod icu_locale_core;
 #[cfg(feature = "sqlx")] mod sqlx;
 #[cfg(feature = "whatlang")] mod whatlang;
 
+pub use generated::*;
+
+#[cfg(feature = "codegen")] use scraper as _;
 #[cfg(test)] use serde_json as _;
