@@ -1,14 +1,29 @@
-# Integrated development environment.
+# AI
+.codex
+.orchestrator
+.specify
+
+# Editor
 .vscode
 
-# Package manager.
-## Cargo.
-target
-## NPM.
+# Language Specifics
+
+## JavaScript/TypeScript
 node_modules
 
-# System.
+## Python
+__pycache__
+.ruff_cache
+.venv
+
+## Rust
+target
+
+# System
 .DS_Store
 
-# Test data.
+# General Ignores
 tmp
+*.bak
+*.log
+.env*
