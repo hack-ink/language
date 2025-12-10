@@ -21,10 +21,10 @@ Language tags are defined in [BCP47](http://tools.ietf.org/html/bcp47). A friend
 ## Feature Highlights
 
 - Typed coverage of BCP47 language tags through a single `Language` enum.
-- Conversion helpers: `as_tag`, `from_tag`, `as_str`, and `as_local` give tags, English names, and native names.
+- Conversion helpers: `tag`, `name`, and `local_name` give tags, English names, and native names, with `FromStr`/`TryFrom` for parsing.
 - `Language::all()` provides a compile-time array for iterating over every language without allocation.
 - Optional `serde` feature for serializing and deserializing language values.
-- Code is generated from a Translation.io “languages with plural cases” snapshot stored in `data/`; `cargo build` enforces validity and the `language` binary can refresh/regenerate while keeping offline builds working.
+- Code is generated directly from the translation.io “languages with plural cases” page; `cargo build` enforces validity and the `language` binary downloads fresh data when regenerating.
 - Optional ICU4X interop (`icu_locale_core` feature) for converting to/from `Locale` and `LanguageIdentifier`.
 - Optional whatlang interop (`whatlang` feature) for converting to/from `whatlang::Lang` with clear error reporting.
 - Optional SQLx interop (`sqlx-postgres` / `sqlx-mysql` / `sqlx-sqlite`) for `Type`/`Encode`/`Decode` support using textual tags.
@@ -37,10 +37,97 @@ use language::Language;
 
 let en = Language::En;
 
-assert_eq!(en.as_tag(), "en");
-assert_eq!(Language::from_tag("en"), Some(Language::En));
-assert_eq!(en.as_str(), "English");
-assert_eq!(en.as_local(), "English");
+assert_eq!(en.tag(), "en");
+assert_eq!("en".parse::<Language>().unwrap(), Language::En);
+assert_eq!(en.name(), "English");
+assert_eq!(en.local_name(), "English");
+```
+
+### More examples
+
+Parse user input safely (any invalid tag becomes a typed error):
+
+```rust
+// crates.io
+use language::Language;
+
+let parsed: Result<Language, _> = "zh-Hant".parse();
+
+assert!(parsed.is_ok());
+
+let bad = "zz-INVALID".parse::<Language>();
+
+assert!(bad.is_err());
+```
+
+Iterate over every language without allocation:
+
+```rust
+// crates.io
+use language::Language;
+
+let tags: Vec<&'static str> = Language::all().iter().map(Language::tag).collect();
+
+assert!(tags.contains(&"fr-CA"));
+```
+
+`serde` (enable the `serde` feature):
+
+```rust
+// crates.io
+use language::Language;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
+struct Payload {
+	lang: Language,
+}
+
+let json = r#"{"lang":"es-MX"}"#;
+let payload: Payload = serde_json::from_str(json)?;
+
+assert_eq!(payload.lang, Language::EsMx);
+```
+
+ICU4X interop (enable `icu_locale_core`):
+
+```rust
+// crates.io
+use icu_locale_core::Locale;
+use language::Language;
+
+let locale: Locale = "pt-BR".parse()?;
+let language = Language::try_from(&locale)?;
+
+assert_eq!(language.tag(), "pt-BR");
+```
+
+whatlang interop (enable `whatlang`):
+
+```rust
+// crates.io
+use language::Language;
+use whatlang::Lang;
+
+let lang = Language::try_from(Lang::Ukr)?;
+
+assert_eq!(lang, Language::Uk);
+```
+
+SQLx (enable one of the `sqlx-*` features):
+
+```rust
+// crates.io
+use language::Language;
+use sqlx::types::Json;
+
+// Language stores as a text tag; works with Postgres/MySQL/SQLite feature flags.
+let stored = Language::Ja;
+let row = sqlx::query!("select $1 as lang", stored)
+	.fetch_one(&pool)
+	.await?;
+
+assert_eq!(row.lang, Language::Ja);
 ```
 
 ## Support Me
@@ -67,11 +154,11 @@ Thank you for your support!
 We would like to extend our heartfelt gratitude to the following projects and contributors:
 
 - The Rust community for their continuous support and development of the Rust ecosystem.
-- Translation.io for publishing the languages-with-plural-cases reference we build from.
+- translation.io for publishing the languages-with-plural-cases reference we build from.
 
 ## Additional Acknowledgements
 
-- Autonym data is sourced from `data/languages_with_plural_cases.html`; refresh it with `cargo run --features codegen --bin language -- --fetch` when updating generated code.
+- Autonym data is downloaded from <https://translation.io/docs/languages_with_plural_cases> whenever you regenerate code with `cargo run --features codegen --bin language`.
 
 <div align="right">
 

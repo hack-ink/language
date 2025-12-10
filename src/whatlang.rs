@@ -1,10 +1,12 @@
+// std
+use std::str::FromStr;
 // crates.io
 use whatlang::Lang;
 // self
 use crate::prelude::*;
 
 fn base_subtag(language: Language) -> &'static str {
-	let tag = language.as_tag();
+	let tag = language.tag();
 
 	debug_assert!(!tag.is_empty());
 
@@ -173,11 +175,11 @@ impl TryFrom<Lang> for Language {
 			Lang::Zul => "zu",
 			Lang::Sna => "sn",
 			// A few whatlang variants (for example Yiddish `Yid` → `yi` and Latin `Lat` → `la`)
-			// are absent from the generated Translation.io dataset. Keep this arm fallible until
+			// are absent from the generated translation.io dataset. Keep this arm fallible until
 			// those tags exist in `Language`.
 			_ => return Err(Error::UnsupportedWhatlangLang(value)),
 		};
 
-		Language::from_tag(tag).ok_or(Error::UnsupportedWhatlangLang(value))
+		Language::from_str(tag).map_err(|_| Error::UnsupportedWhatlangLang(value))
 	}
 }

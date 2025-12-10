@@ -1,5 +1,5 @@
 // std
-use std::collections::HashSet;
+use std::{collections::HashSet, str::FromStr};
 // self
 use language::prelude::*;
 
@@ -19,9 +19,9 @@ fn serde_should_work() {
 #[test]
 fn roundtrip_tags_should_work() {
 	for language in Language::all() {
-		let tag = language.as_tag();
+		let tag = language.tag();
 
-		assert_eq!(Language::from_tag(tag), Some(language));
+		assert_eq!(Language::from_str(tag).unwrap(), language);
 	}
 }
 
@@ -30,7 +30,7 @@ fn tags_should_be_unique() {
 	let mut seen = HashSet::new();
 
 	for language in Language::all() {
-		let tag = language.as_tag();
+		let tag = language.tag();
 
 		assert!(seen.insert(tag), "Duplicate tag detected: {tag}.");
 	}
@@ -40,7 +40,7 @@ fn tags_should_be_unique() {
 #[test]
 fn names_should_not_be_empty() {
 	for language in Language::all() {
-		assert!(!language.as_str().is_empty(), "English name is missing.");
-		assert!(!language.as_local().is_empty(), "Autonym is missing.");
+		assert!(!language.name().is_empty(), "English name is missing.");
+		assert!(!language.local_name().is_empty(), "Autonym is missing.");
 	}
 }

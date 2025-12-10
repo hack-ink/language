@@ -16,10 +16,9 @@ fn print_help() {
 Language codegen helper.
 
 Usage:
-  language [--fetch] [--out <path>]
+  language [--out <path>]
 
 Options:
-  --fetch             Refresh language metadata snapshot from Translation.io.
   --out <path>        Where to write generated Rust (default: src/generated.rs).
   -h, --help          Show this help message."
 	);
@@ -27,12 +26,10 @@ Options:
 
 fn main() -> Result<(), Box<dyn Error>> {
 	let mut args = env::args().skip(1);
-	let mut fetch = false;
 	let mut out_arg = None;
 
 	while let Some(arg) = args.next() {
 		match arg.as_str() {
-			"--fetch" => fetch = true,
 			"--out" => {
 				out_arg = Some(args.next().ok_or("Expected path after --out.")?);
 			},
@@ -47,14 +44,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 	}
 
 	let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-	let data_dir = manifest_dir.join("data");
-	let languages_path = data_dir.join("languages_with_plural_cases.html");
 
-	if fetch {
-		fetch_languages(&languages_path)?;
-	}
-
-	let code = codegen::generate(&languages_path)?;
+	let languages_html = fetch_languages()?;
+	let code = codegen::generate(&languages_html)?;
 	let out_path = out_arg
 		.as_ref()
 		.map(PathBuf::from)
@@ -76,21 +68,17 @@ fn main() -> Result<(), Box<dyn Error>> {
 	Ok(())
 }
 
-fn fetch_languages(dest: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
-	if let Some(parent) = dest.parent() {
-		fs::create_dir_all(parent)?;
-	}
-
-	let status = Command::new("curl")
+fn fetch_languages() -> Result<String, Box<dyn std::error::Error>> {
+	let output = Command::new("curl")
 		.arg("-sSL")
 		.arg("https://translation.io/docs/languages_with_plural_cases")
-		.arg("-o")
-		.arg(dest)
-		.status()?;
+		.output()?;
 
-	if !status.success() {
+	if !output.status.success() {
 		return Err("Curl failed to download language metadata.".into());
 	}
 
-	Ok(())
+	let content = String::from_utf8(output.stdout)?;
+
+	Ok(content)
 }

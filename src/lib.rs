@@ -3,13 +3,14 @@
 
 #![deny(clippy::all, missing_docs, unused_crate_dependencies)]
 
-#[cfg(any(feature = "icu_locale_core", feature = "sqlx", feature = "whatlang"))] pub mod error;
+pub mod error;
 pub mod prelude {
-	//! Common imports for consumers of this crate.
+	#![allow(missing_docs)]
 
-	#[cfg(any(feature = "icu_locale_core", feature = "sqlx", feature = "whatlang"))]
-	pub use crate::error::{Error, Result};
-	pub use crate::generated::*;
+	pub use crate::{
+		error::{Error, Result},
+		generated::*,
+	};
 }
 
 mod generated;

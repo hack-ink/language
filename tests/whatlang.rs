@@ -6,7 +6,7 @@ use whatlang::Lang;
 use language::prelude::*;
 
 fn base_subtag(language: Language) -> &'static str {
-	language.as_tag().split('-').next().unwrap()
+	language.tag().split('-').next().unwrap()
 }
 
 #[test]

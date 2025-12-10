@@ -1,3 +1,5 @@
+// std
+use std::str::FromStr;
 // crates.io
 use sqlx::{
 	Decode, Encode, Type,
@@ -32,7 +34,7 @@ impl<'q> Encode<'q, sqlx::Postgres> for Language {
 		&self,
 		buf: &mut <sqlx::Postgres as HasArguments<'q>>::ArgumentBuffer,
 	) -> IsNull {
-		let tag = self.as_tag();
+		let tag = self.tag();
 
 		<&str as Encode<'q, sqlx::Postgres>>::encode(tag, buf)
 	}
@@ -43,7 +45,7 @@ impl<'r> Decode<'r, sqlx::Postgres> for Language {
 	fn decode(value: <sqlx::Postgres as HasValueRef<'r>>::ValueRef) -> Result<Self, BoxDynError> {
 		let tag = <&str as Decode<'r, sqlx::Postgres>>::decode(value)?;
 
-		Language::from_tag(tag).ok_or_else(|| format!("Invalid language tag `{tag}`.").into())
+		Language::from_str(tag).map_err(Into::into)
 	}
 }
 
@@ -61,7 +63,7 @@ impl Type<sqlx::MySql> for Language {
 #[cfg(feature = "sqlx-mysql")]
 impl<'q> Encode<'q, sqlx::MySql> for Language {
 	fn encode_by_ref(&self, buf: &mut <sqlx::MySql as HasArguments<'q>>::ArgumentBuffer) -> IsNull {
-		let tag = self.as_tag();
+		let tag = self.tag();
 
 		<&str as Encode<'q, sqlx::MySql>>::encode(tag, buf)
 	}
@@ -72,7 +74,7 @@ impl<'r> Decode<'r, sqlx::MySql> for Language {
 	fn decode(value: <sqlx::MySql as HasValueRef<'r>>::ValueRef) -> Result<Self, BoxDynError> {
 		let tag = <&str as Decode<'r, sqlx::MySql>>::decode(value)?;
 
-		Language::from_tag(tag).ok_or_else(|| format!("Invalid language tag `{tag}`.").into())
+		Language::from_str(tag).map_err(Into::into)
 	}
 }
 
@@ -93,7 +95,7 @@ impl<'q> Encode<'q, sqlx::Sqlite> for Language {
 		&self,
 		buf: &mut <sqlx::Sqlite as HasArguments<'q>>::ArgumentBuffer,
 	) -> IsNull {
-		let tag = self.as_tag();
+		let tag = self.tag();
 
 		<&str as Encode<'q, sqlx::Sqlite>>::encode(tag, buf)
 	}
@@ -104,6 +106,6 @@ impl<'r> Decode<'r, sqlx::Sqlite> for Language {
 	fn decode(value: <sqlx::Sqlite as HasValueRef<'r>>::ValueRef) -> Result<Self, BoxDynError> {
 		let tag = <&str as Decode<'r, sqlx::Sqlite>>::decode(value)?;
 
-		Language::from_tag(tag).ok_or_else(|| format!("Invalid language tag `{tag}`.").into())
+		Language::from_str(tag).map_err(Into::into)
 	}
 }

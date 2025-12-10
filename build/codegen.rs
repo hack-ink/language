@@ -3,9 +3,6 @@ use std::{
 	collections::BTreeMap,
 	error::Error as StdError,
 	fmt::{Display, Formatter, Result as FmtResult},
-	fs,
-	io::Error as IoError,
-	path::Path,
 };
 
 // crates.io
@@ -13,19 +10,12 @@ use scraper::{ElementRef, Html, Selector};
 
 #[derive(Debug)]
 pub enum CodegenError {
-	Io(IoError),
 	Parse(String),
 	Validation(String),
-}
-impl From<IoError> for CodegenError {
-	fn from(err: IoError) -> Self {
-		CodegenError::Io(err)
-	}
 }
 impl Display for CodegenError {
 	fn fmt(&self, f: &mut Formatter) -> FmtResult {
 		match self {
-			CodegenError::Io(e) => write!(f, "I/O error: {e}"),
 			CodegenError::Parse(msg) => write!(f, "Parse error: {msg}"),
 			CodegenError::Validation(msg) => write!(f, "Validation error: {msg}"),
 		}
@@ -41,15 +31,14 @@ struct TagSpec {
 	autonym: String,
 }
 
-pub fn generate(languages_path: &Path) -> Result<String, CodegenError> {
-	let specs = load_languages(languages_path)?;
+pub fn generate(languages_html: &str) -> Result<String, CodegenError> {
+	let specs = load_languages(languages_html)?;
 
 	Ok(render(&specs))
 }
 
-fn load_languages(path: &Path) -> Result<Vec<TagSpec>, CodegenError> {
-	let content = fs::read_to_string(path)?;
-	let document = Html::parse_document(&content);
+fn load_languages(languages_html: &str) -> Result<Vec<TagSpec>, CodegenError> {
+	let document = Html::parse_document(languages_html);
 	let row_selector = Selector::parse("#languages-table tbody tr")
 		.map_err(|err| CodegenError::Parse(format!("Invalid selector: {err}")))?;
 	let cell_selector = Selector::parse("td")
@@ -67,7 +56,7 @@ fn load_languages(path: &Path) -> Result<Vec<TagSpec>, CodegenError> {
 		let name = cells.remove(0);
 		let region = cells.remove(0);
 		let native = cells.remove(0);
-		// Skip Translation.io synthetic/system-specific tags that are not valid BCP47 language
+		// Skip translation.io synthetic/system-specific tags that are not valid BCP47 language
 		// codes.
 		let lower_tag = tag.to_ascii_lowercase();
 
@@ -159,7 +148,7 @@ fn normalize_whitespace(input: &str) -> String {
 	let mut last_space = false;
 
 	for ch in input.chars() {
-		// Translation.io includes soft hyphens in some autonyms (for example Azeri); drop those and
+		// translation.io includes soft hyphens in some autonyms (for example Azeri); drop those and
 		// other control characters so generated code stays ASCII and lint-friendly.
 		if ch == '\u{00ad}' || ch.is_control() {
 			continue;
@@ -178,7 +167,7 @@ fn normalize_whitespace(input: &str) -> String {
 		last_space = is_space;
 	}
 
-	out.trim().to_string()
+	out.trim().into()
 }
 
 fn tag_to_ident(tag: &str) -> Result<String, String> {
@@ -210,10 +199,13 @@ fn render(specs: &[TagSpec]) -> String {
 
 	out.push_str(
 		"\
+// std
+use std::{convert::TryFrom, str::FromStr};
 // self
+use crate::prelude::*;
 use Language::*;
 
-/// Generated from Translation.io languages-with-plural-cases snapshot.
+/// Generated from the translation.io languages-with-plural-cases page.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Language {
 ",
@@ -255,7 +247,7 @@ impl Language {
 	}
 
 	/// Get the language tag.
-	pub fn as_tag(&self) -> &'static str {
+	pub fn tag(&self) -> &'static str {
 		match self {
 ",
 	);
@@ -272,27 +264,8 @@ impl Language {
 		"		}
 	}
 
-	/// Parse a language tag.
-	pub fn from_tag(tag: &str) -> Option<Self> {
-		Some(match tag {
-",
-	);
-
-	for spec in specs {
-		out.push_str(&format!(
-			"			\"{}\" => {},
-",
-			spec.tag, spec.ident
-		));
-	}
-
-	out.push_str(
-		"			_ => return None,
-		})
-	}
-
 	/// Get the language name.
-	pub fn as_str(&self) -> &str {
+	pub fn name(&self) -> &str {
 		match self {
 ",
 	);
@@ -311,7 +284,7 @@ impl Language {
 	}
 
 	/// Get the language name in the language itself.
-	pub fn as_local(&self) -> &'static str {
+	pub fn local_name(&self) -> &'static str {
 		match self {
 ",
 	);
@@ -329,26 +302,61 @@ impl Language {
 		"		}
 	}
 }
+impl FromStr for Language {
+	type Err = Error;
 
+	fn from_str(tag: &str) -> Result<Self, Self::Err> {
+		let this = match tag {
+",
+	);
+
+	for spec in specs {
+		out.push_str(&format!(
+			"			\"{}\" => {},
+",
+			spec.tag, spec.ident
+		));
+	}
+
+	out.push_str(
+		"			_ => return Err(Error::UnsupportedLanguageTag(tag.into())),
+		};
+
+		Ok(this)
+	}
+}
+impl TryFrom<&str> for Language {
+	type Error = Error;
+
+	fn try_from(value: &str) -> Result<Self, Self::Error> {
+		Self::from_str(value)
+	}
+}
+impl TryFrom<String> for Language {
+	type Error = Error;
+
+	fn try_from(value: String) -> Result<Self, Self::Error> {
+		Self::from_str(&value)
+	}
+}
 #[cfg(feature = \"serde\")]
 impl serde::Serialize for Language {
 	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
 	where
 		S: serde::ser::Serializer,
 	{
-		serializer.serialize_str(self.as_tag())
+		serializer.serialize_str(self.tag())
 	}
 }
-
 #[cfg(feature = \"serde\")]
 impl<'de> serde::Deserialize<'de> for Language {
 	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
 	where
 		D: serde::de::Deserializer<'de>,
 	{
-		let tag: String = serde::Deserialize::deserialize(deserializer)?;
+		let tag = String::deserialize(deserializer)?;
 
-		Language::from_tag(&tag).ok_or_else(|| serde::de::Error::unknown_variant(&tag, &[]))
+		Language::from_str(&tag).map_err(|_| serde::de::Error::unknown_variant(&tag, &[]))
 	}
 }
 ",

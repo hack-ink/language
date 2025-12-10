@@ -4,6 +4,10 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+	/// The language tag is not supported by this crate.
+	#[error("Unsupported language tag `{0}`.")]
+	UnsupportedLanguageTag(String),
+
 	/// Parsing an ICU locale failed.
 	#[cfg(feature = "icu_locale_core")]
 	#[error("Failed to parse ICU locale: {0}")]
@@ -13,6 +17,7 @@ pub enum Error {
 	#[error("Unsupported ICU locale `{0}`.")]
 	UnsupportedIcuLocale(String),
 	/// The base language subtag is not supported by `whatlang`.
+
 	#[cfg(feature = "whatlang")]
 	#[error("Unsupported whatlang base language subtag `{0}`.")]
 	UnsupportedWhatlangBase(&'static str),

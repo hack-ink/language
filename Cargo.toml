@@ -10,7 +10,7 @@ name        = "language"
 readme      = "README.md"
 repository  = "https://github.com/hack-ink/language"
 resolver    = "3"
-version     = "0.2.2"
+version     = "0.3.0"
 
 [package.metadata.docs.rs]
 all-features = true
@@ -36,27 +36,22 @@ codegen = [
 icu_locale_core = [
 	# crates.io
 	"dep:icu_locale_core",
-	"thiserror",
 ]
 sqlx-mysql = [
 	# crates.io
 	"sqlx/mysql",
-	"thiserror",
 ]
 sqlx-postgres = [
 	# crates.io
 	"sqlx/postgres",
-	"thiserror",
 ]
 sqlx-sqlite = [
 	# crates.io
 	"sqlx/sqlite",
-	"thiserror",
 ]
 whatlang = [
 	# crates.io
 	"dep:whatlang",
-	"thiserror",
 ]
 
 [dependencies]
@@ -65,7 +60,7 @@ icu_locale_core = { version = "2.1", optional = true, features = ["alloc"] }
 serde           = { version = "1.0", optional = true, features = ["derive"] }
 scraper         = { version = "0.25", optional = true }
 sqlx            = { version = "0.7", optional = true, default-features = false }
-thiserror       = { version = "2.0", optional = true }
+thiserror       = { version = "2.0" }
 whatlang        = { version = "0.18", optional = true }
 
 [dev-dependencies]
