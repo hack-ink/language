@@ -44,8 +44,7 @@ impl TryFrom<LinguaLanguage> for Language {
 
 		let iso_639_3 = value.iso_code_639_3().to_string();
 
-		Language::try_from(iso_639_3.as_str())
-			.map_err(|_| Error::UnsupportedLinguaLanguage(value))
+		Language::try_from(iso_639_3.as_str()).map_err(|_| Error::UnsupportedLinguaLanguage(value))
 	}
 }
 
@@ -59,13 +58,15 @@ fn lingua_language_for_base(base: &str) -> Option<LinguaLanguage> {
 	let languages = LinguaLanguage::all();
 
 	if let Ok(c) = IsoCode639_1::from_str(base)
-		&& let Some(l) = languages.iter().find(|lang| lang.iso_code_639_1() == c) {
-			return Some(*l);
-		}
+		&& let Some(l) = languages.iter().find(|lang| lang.iso_code_639_1() == c)
+	{
+		return Some(*l);
+	}
 	if let Ok(c) = IsoCode639_3::from_str(base)
-		&& let Some(l) = languages.iter().find(|lang| lang.iso_code_639_3() == c) {
-			return Some(*l);
-		}
+		&& let Some(l) = languages.iter().find(|lang| lang.iso_code_639_3() == c)
+	{
+		return Some(*l);
+	}
 
 	None
 }
