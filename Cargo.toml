@@ -10,14 +10,14 @@ name        = "language"
 readme      = "README.md"
 repository  = "https://github.com/hack-ink/language"
 resolver    = "3"
-version     = "0.3.3"
+version     = "0.4.0"
 
 [package.metadata.docs.rs]
 all-features = true
 
 [[bin]]
-name = "language"
-path = "src/main.rs"
+name              = "language"
+path              = "src/main.rs"
 required-features = ["codegen"]
 
 [profile.ci-dev]
@@ -46,12 +46,12 @@ sqlx-sqlite = [
 	"sqlx/sqlite",
 ]
 
-
 [dependencies]
 # crates.io
 icu_locale_core = { version = "2.1", optional = true, features = ["alloc"] }
-serde           = { version = "1.0", optional = true, features = ["derive"] }
+lingua          = { version = "1.7", optional = true }
 scraper         = { version = "0.25", optional = true }
+serde           = { version = "1.0", optional = true, features = ["derive"] }
 sqlx            = { version = "0.8", optional = true, default-features = false }
 thiserror       = { version = "2.0" }
 whatlang        = { version = "0.18", optional = true }

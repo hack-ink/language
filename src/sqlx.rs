@@ -1,5 +1,3 @@
-// std
-use std::str::FromStr;
 // crates.io
 use sqlx::{Decode, Encode, Type, encode::IsNull, error::BoxDynError};
 // self
@@ -42,7 +40,7 @@ impl<'r> Decode<'r, sqlx::Postgres> for Language {
 	) -> Result<Self, BoxDynError> {
 		let tag = <&str as Decode<'r, sqlx::Postgres>>::decode(value)?;
 
-		Language::from_str(tag).map_err(Into::into)
+		Language::try_from(tag).map_err(Into::into)
 	}
 }
 
@@ -74,7 +72,7 @@ impl<'r> Decode<'r, sqlx::MySql> for Language {
 	fn decode(value: <sqlx::MySql as sqlx::Database>::ValueRef<'r>) -> Result<Self, BoxDynError> {
 		let tag = <&str as Decode<'r, sqlx::MySql>>::decode(value)?;
 
-		Language::from_str(tag).map_err(Into::into)
+		Language::try_from(tag).map_err(Into::into)
 	}
 }
 
@@ -106,6 +104,6 @@ impl<'r> Decode<'r, sqlx::Sqlite> for Language {
 	fn decode(value: <sqlx::Sqlite as sqlx::Database>::ValueRef<'r>) -> Result<Self, BoxDynError> {
 		let tag = <&str as Decode<'r, sqlx::Sqlite>>::decode(value)?;
 
-		Language::from_str(tag).map_err(Into::into)
+		Language::try_from(tag).map_err(Into::into)
 	}
 }

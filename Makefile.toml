@@ -8,13 +8,24 @@ args = [
 	"--all-features",
 ]
 
-[tasks.fmt]
+[tasks.clippy-fix]
 workspace = false
 command = "cargo"
-toolchain = "nightly"
 args = [
-	"fmt",
-	"--all",
+	"clippy",
+	"--fix",
+	"--allow-dirty",
+	"--workspace",
+	"--all-targets",
+	"--all-features",
+]
+
+[tasks.fmt]
+workspace = false
+command = "bash"
+args = [
+	"-lc",
+	"taplo fmt && cargo +nightly fmt --all",
 ]
 
 [tasks.nextest]

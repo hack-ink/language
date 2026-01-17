@@ -19,7 +19,7 @@ impl TryFrom<Locale> for Language {
 	fn try_from(value: Locale) -> Result<Self, Self::Error> {
 		let value = value.to_string();
 
-		Language::from_str(&value).map_err(|_| Error::UnsupportedIcuLocale(value))
+		Language::try_from(value.as_str()).map_err(|_| Error::UnsupportedIcuLocale(value))
 	}
 }
 
@@ -37,6 +37,6 @@ impl TryFrom<LanguageIdentifier> for Language {
 	fn try_from(value: LanguageIdentifier) -> Result<Self, Self::Error> {
 		let value = value.to_string();
 
-		Language::from_str(&value).map_err(|_| Error::UnsupportedIcuLocale(value))
+		Language::try_from(value.as_str()).map_err(|_| Error::UnsupportedIcuLocale(value))
 	}
 }

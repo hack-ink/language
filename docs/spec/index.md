@@ -23,7 +23,7 @@ Normative behavior for the `language` crate.
 
 Parsing:
 
-- `FromStr` and `TryFrom` expect canonical tag format.
+- `TryFrom` expects canonical tag format.
 - No case or separator normalization.
 - Unknown tags return `Error::UnsupportedLanguageTag`.
 

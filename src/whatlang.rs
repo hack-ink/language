@@ -1,5 +1,3 @@
-// std
-use std::str::FromStr;
 // crates.io
 use whatlang::Lang;
 // self
@@ -180,6 +178,6 @@ impl TryFrom<Lang> for Language {
 			_ => return Err(Error::UnsupportedWhatlangLang(value)),
 		};
 
-		Language::from_str(tag).map_err(|_| Error::UnsupportedWhatlangLang(value))
+		Language::try_from(tag).map_err(|_| Error::UnsupportedWhatlangLang(value))
 	}
 }

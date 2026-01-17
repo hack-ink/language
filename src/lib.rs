@@ -15,6 +15,7 @@ pub mod prelude {
 
 mod generated;
 #[cfg(feature = "icu_locale_core")] mod icu_locale_core;
+#[cfg(feature = "lingua")] mod lingua;
 #[cfg(feature = "sqlx")] mod sqlx;
 #[cfg(feature = "whatlang")] mod whatlang;
 

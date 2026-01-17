@@ -21,12 +21,13 @@ Language tags are defined in [BCP47](http://tools.ietf.org/html/bcp47). A friend
 ## Feature Highlights
 
 - Typed coverage of BCP47 language tags through a single `Language` enum.
-- Conversion helpers: `tag`, `name`, and `local_name` give tags, English names, and native names, with `FromStr`/`TryFrom` for parsing.
+- Conversion helpers: `tag`, `name`, and `local_name` give tags, English names, and native names, with `TryFrom` for parsing.
 - `Language::all()` provides a compile-time array for iterating over every language without allocation.
 - Optional `serde` feature for serializing and deserializing language values.
 - Code is generated directly from the translation.io “languages with plural cases” page; `cargo build` enforces validity and the `language` binary downloads fresh data when regenerating.
 - Optional ICU4X interop (`icu_locale_core` feature) for converting to/from `Locale` and `LanguageIdentifier`.
 - Optional whatlang interop (`whatlang` feature) for converting to/from `whatlang::Lang` with clear error reporting.
+- Optional lingua interop (`lingua` feature) for converting to/from `lingua::Language` with clear error reporting.
 - Optional SQLx interop (`sqlx-postgres` / `sqlx-mysql` / `sqlx-sqlite`) for `Type`/`Encode`/`Decode` support using textual tags.
 
 ## Usage
@@ -38,7 +39,7 @@ use language::Language;
 let en = Language::En;
 
 assert_eq!(en.tag(), "en");
-assert_eq!("en".parse::<Language>().unwrap(), Language::En);
+assert_eq!(Language::try_from("en").unwrap(), Language::En);
 assert_eq!(en.name(), "English");
 assert_eq!(en.local_name(), "English");
 ```
@@ -51,11 +52,11 @@ Parse user input safely (any invalid tag becomes a typed error):
 // crates.io
 use language::Language;
 
-let parsed: Result<Language, _> = "zh-Hant".parse();
+let parsed: Result<Language, _> = Language::try_from("zh-Hant");
 
 assert!(parsed.is_ok());
 
-let bad = "zz-INVALID".parse::<Language>();
+let bad = Language::try_from("zz-INVALID");
 
 assert!(bad.is_err());
 ```
@@ -112,6 +113,18 @@ use whatlang::Lang;
 let lang = Language::try_from(Lang::Ukr)?;
 
 assert_eq!(lang, Language::Uk);
+```
+
+lingua interop (enable `lingua`):
+
+```rust
+// crates.io
+use language::Language;
+use lingua::Language as LinguaLanguage;
+
+let lang = Language::try_from(LinguaLanguage::Japanese)?;
+
+assert_eq!(lang, Language::Ja);
 ```
 
 SQLx (enable one of the `sqlx-*` features):

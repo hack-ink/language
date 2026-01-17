@@ -1,5 +1,5 @@
 // std
-use std::{collections::HashSet, str::FromStr};
+use std::collections::HashSet;
 // self
 use language::prelude::*;
 
@@ -21,7 +21,7 @@ fn roundtrip_tags_should_work() {
 	for language in Language::all() {
 		let tag = language.tag();
 
-		assert_eq!(Language::from_str(tag).unwrap(), language);
+		assert_eq!(Language::try_from(tag).unwrap(), language);
 	}
 }
 

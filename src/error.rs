@@ -16,8 +16,17 @@ pub enum Error {
 	#[cfg(feature = "icu_locale_core")]
 	#[error("Unsupported ICU locale `{0}`.")]
 	UnsupportedIcuLocale(String),
-	/// The base language subtag is not supported by `whatlang`.
 
+	/// The base language subtag is not supported by `lingua`.
+	#[cfg(feature = "lingua")]
+	#[error("Unsupported lingua base language subtag `{0}`.")]
+	UnsupportedLinguaBase(&'static str),
+	/// The `lingua::Language` variant is not mapped in this crate.
+	#[cfg(feature = "lingua")]
+	#[error("Unsupported lingua Language variant `{0:?}`.")]
+	UnsupportedLinguaLanguage(lingua::Language),
+
+	/// The base language subtag is not supported by `whatlang`.
 	#[cfg(feature = "whatlang")]
 	#[error("Unsupported whatlang base language subtag `{0}`.")]
 	UnsupportedWhatlangBase(&'static str),
