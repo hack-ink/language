@@ -33,10 +33,6 @@ codegen = [
 	# crates.io
 	"scraper",
 ]
-icu_locale_core = [
-	# crates.io
-	"dep:icu_locale_core",
-]
 sqlx-mysql = [
 	# crates.io
 	"sqlx/mysql",
@@ -49,10 +45,7 @@ sqlx-sqlite = [
 	# crates.io
 	"sqlx/sqlite",
 ]
-whatlang = [
-	# crates.io
-	"dep:whatlang",
-]
+
 
 [dependencies]
 # crates.io

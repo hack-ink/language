@@ -1,28 +1,37 @@
 # AI
 .codex
-.orchestrator
 .specify
+.worktrees
 
 # Editor
 .vscode
+.zed
 
 # Language Specifics
 
 ## JavaScript/TypeScript
+dist
 node_modules
+.vite
 
 ## Python
 __pycache__
+.pytest_cache
 .ruff_cache
 .venv
 
 ## Rust
 target
 
+## Swift
+xcuserdata
+.build
+
 # System
 .DS_Store
 
 # General Ignores
+model
 tmp
 *.bak
 *.log
