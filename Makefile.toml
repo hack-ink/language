@@ -22,11 +22,24 @@ args = [
 
 [tasks.fmt]
 workspace = false
-command = "bash"
-args = [
-	"-lc",
-	"taplo fmt && cargo +nightly fmt --all",
+dependencies = [
+	"fmt-rust",
+	"fmt-taplo",
 ]
+
+[tasks.fmt-rust]
+workspace = false
+command = "cargo"
+toolchain = "nightly"
+args = [
+	"fmt",
+	"--all",
+]
+
+[tasks.fmt-taplo]
+workspace = false
+command = "taplo"
+args = ["fmt"]
 
 [tasks.nextest]
 workspace = false

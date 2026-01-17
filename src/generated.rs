@@ -1,5 +1,5 @@
 // std
-use std::{convert::TryFrom, str::FromStr};
+use std::convert::TryFrom;
 // self
 use crate::prelude::*;
 use Language::*;
@@ -1492,10 +1492,10 @@ impl Language {
 		}
 	}
 }
-impl FromStr for Language {
-	type Err = Error;
+impl TryFrom<&str> for Language {
+	type Error = Error;
 
-	fn from_str(tag: &str) -> Result<Self, Self::Err> {
+	fn try_from(tag: &str) -> Result<Self, Self::Error> {
 		let this = match tag {
 			"af" => Af,
 			"ak" => Ak,
@@ -1746,18 +1746,11 @@ impl FromStr for Language {
 		Ok(this)
 	}
 }
-impl TryFrom<&str> for Language {
-	type Error = Error;
-
-	fn try_from(value: &str) -> Result<Self, Self::Error> {
-		Self::from_str(value)
-	}
-}
 impl TryFrom<String> for Language {
 	type Error = Error;
 
 	fn try_from(value: String) -> Result<Self, Self::Error> {
-		Self::from_str(&value)
+		Language::try_from(value.as_str())
 	}
 }
 #[cfg(feature = "serde")]
@@ -1777,6 +1770,23 @@ impl<'de> serde::Deserialize<'de> for Language {
 	{
 		let tag = String::deserialize(deserializer)?;
 
-		Language::from_str(&tag).map_err(|_| serde::de::Error::unknown_variant(&tag, &[]))
+		Language::try_from(tag.as_str()).map_err(|_| serde::de::Error::unknown_variant(&tag, &[]))
 	}
 }
+#[cfg(feature = "utoipa")]
+impl utoipa::PartialSchema for Language {
+	fn schema() -> utoipa::openapi::RefOr<utoipa::openapi::schema::Schema> {
+		let enum_values =
+			Language::all().iter().map(|language| language.tag().to_string()).collect::<Vec<_>>();
+		let object = utoipa::openapi::schema::ObjectBuilder::new()
+			.schema_type(utoipa::openapi::schema::SchemaType::Type(
+				utoipa::openapi::schema::Type::String,
+			))
+			.enum_values(Some(enum_values))
+			.build();
+
+		utoipa::openapi::RefOr::T(utoipa::openapi::schema::Schema::Object(object))
+	}
+}
+#[cfg(feature = "utoipa")]
+impl utoipa::ToSchema for Language {}
